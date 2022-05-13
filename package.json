@@ -1,0 +1,17 @@
+{
+  "name": "mini-vue",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ymvici/mini-vue.git",
+  "author": "vici_y <vici_y@163.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "rollup": "^2.72.1",
+    "rollup-plugin-babel": "^4.4.0"
+  },
+  "scripts": {
+    "dev": "rollup -cw"
+  }
+}
