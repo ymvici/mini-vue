@@ -75,7 +75,7 @@ export function mountComponent(vm, el) {
   // 这里的el 是通过querySelector处理过的
   vm.$el = el;
 
-  // 1.调用render方法产生虚拟节点 虚拟DOM updata
+  // 1.调用render方法产生虚拟节点 虚拟DOM updata将虚拟dom变成真实方法
 
   vm._update(vm._render()); // vm.$options.render() 虚拟节点
 
