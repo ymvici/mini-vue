@@ -1,4 +1,4 @@
-import { compileToFunction } from "./compiler/index";
+import { compileToFunction } from "./compiler";
 import { mountComponent } from "./lifecycle";
 import { initState } from "./state";
 
@@ -28,7 +28,7 @@ export function initMixin(Vue) {
       let template;
       // 没有render看一下是否写了tempate, 没写template采用外部的template
       if (!ops.template && el) {
-        // 没有写模板 但是写了el
+        // 没有写模板 但是写了el outerHTML从对象的起始位置到终止位置的全部内容, 还包含对象标签本身。。
         template = el.outerHTML;
       } else {
         if (el) {

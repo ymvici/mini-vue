@@ -109,10 +109,10 @@
 
   var startTagClose = /^\s*(\/?)>/; // <div> <br/>
   // vue3 采用的不是使用正则
-  // 对模板进行编译处理  
+  // 对模板进行编译处理
 
   function parseHTML(html) {
-    // html最开始肯定是一个  </div>
+    // html最开始肯定是一个<  </div>
     var ELEMENT_TYPE = 1;
     var TEXT_TYPE = 3;
     var stack = []; // 用于存放元素的
@@ -152,7 +152,7 @@
 
     function chars(text) {
       // 文本直接放到当前指向的节点中
-      text = text.replace(/\s/g, ' '); // 如果空格超过2就删除2个以上的
+      text = text.replace(/\s/g, " "); // 如果空格超过2就删除2个以上的
 
       text && currentParent.children.push({
         type: TEXT_TYPE,
@@ -205,7 +205,7 @@
     while (html) {
       // 如果textEnd 为0 说明是一个开始标签或者结束标签
       // 如果textEnd > 0说明就是文本的结束位置
-      var textEnd = html.indexOf('<'); // 如果indexOf中的索引是0 则说明是个标签
+      var textEnd = html.indexOf("<"); // 如果indexOf中的索引是0 则说明是个标签
 
       if (textEnd == 0) {
         var startTagMatch = parseStartTag(); // 开始标签的匹配结果
@@ -216,7 +216,7 @@
           continue;
         }
 
-        var endTagMatch = html.match(endTag);
+        var endTagMatch = html.match(endTag); // 结束标签直接删除
 
         if (endTagMatch) {
           advance(endTagMatch[0].length);
@@ -230,27 +230,28 @@
 
         if (text) {
           chars(text);
-          advance(text.length); // 解析到的文本 
+          advance(text.length); // 解析到的文本
         }
       }
     }
 
+    console.log("~ root", root);
     return root;
   }
 
   function genProps(attrs) {
-    var str = ''; // {name,value}
+    var str = ""; // {name,value}
 
     for (var i = 0; i < attrs.length; i++) {
       var attr = attrs[i];
 
-      if (attr.name === 'style') {
+      if (attr.name === "style") {
         (function () {
           // color:red;background:red => {color:'red'}
           var obj = {};
-          attr.value.split(';').forEach(function (item) {
+          attr.value.split(";").forEach(function (item) {
             // qs 库
-            var _item$split = item.split(':'),
+            var _item$split = item.split(":"),
                 _item$split2 = _slicedToArray(_item$split, 2),
                 key = _item$split2[0],
                 value = _item$split2[1];
@@ -281,12 +282,13 @@
       } else {
         //_v( _s(name)+'hello' + _s(name))
         var tokens = [];
-        var match;
+        var match; // 第一次正则匹配到以后，后面会直接从第一次捕获的下标值开始匹配，所以要重置正则的匹配下标
+
         defaultTagRE.lastIndex = 0;
         var lastIndex = 0; // split
 
         while (match = defaultTagRE.exec(text)) {
-          var index = match.index; // 匹配的位置  {{name}} hello  {{name}} hello 
+          var index = match.index; // 匹配的位置  {{name}} hello  {{name}} hello
 
           if (index > lastIndex) {
             tokens.push(JSON.stringify(text.slice(lastIndex, index)));
@@ -300,7 +302,7 @@
           tokens.push(JSON.stringify(text.slice(lastIndex)));
         }
 
-        return "_v(".concat(tokens.join('+'), ")");
+        return "_v(".concat(tokens.join("+"), ")");
       }
     }
   }
@@ -308,12 +310,12 @@
   function genChildren(children) {
     return children.map(function (child) {
       return gen(child);
-    }).join(',');
+    }).join(",");
   }
 
   function codegen(ast) {
     var children = genChildren(ast.children);
-    var code = "_c('".concat(ast.tag, "',").concat(ast.attrs.length > 0 ? genProps(ast.attrs) : 'null').concat(ast.children.length ? ",".concat(children) : '', ")");
+    var code = "_c('".concat(ast.tag, "',").concat(ast.attrs.length > 0 ? genProps(ast.attrs) : "null").concat(ast.children.length ? ",".concat(children) : "", ")");
     return code;
   }
 
@@ -456,8 +458,11 @@
     // 2.根据虚拟DOM产生真实DOM
     // 3.插入到el元素中
 
-  } // vue核心流程 1） 创造了响应式数据  2） 模板转换成ast语法树
-  // 3) 将ast语法树转换了render函数 4) 后续每次数据更新可以只执行render函数 (无需再次执行ast转化的过程)
+  } // vue核心流程
+  // 1） 创造了响应式数据
+  // 2） 模板转换成ast语法树
+  // 3) 将ast语法树转换了render函数
+  // 4) 后续每次数据更新可以只执行render函数 (无需再次执行ast转化的过程)
   // render函数会去产生虚拟节点（使用响应式数据）
   // 根据生成的虚拟节点创造真实的DOM
 
@@ -661,7 +666,7 @@
         var template; // 没有render看一下是否写了tempate, 没写template采用外部的template
 
         if (!ops.template && el) {
-          // 没有写模板 但是写了el
+          // 没有写模板 但是写了el outerHTML从对象的起始位置到终止位置的全部内容, 还包含对象标签本身。。
           template = el.outerHTML;
         } else {
           if (el) {

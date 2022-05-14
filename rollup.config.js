@@ -1,6 +1,6 @@
 // rollup默认可以导出一个对象 作为打包的配置文件
 import babel from "rollup-plugin-babel";
-// import resolve from "@rollup/plugin-node-resolve";
+import resolve from "@rollup/plugin-node-resolve";
 export default {
   input: "./src/index.js", // 入口
   output: {
@@ -13,7 +13,7 @@ export default {
     babel({
       exclude: "node_modules/**", // 排除node_modules所有文件
     }),
-    // resolve(),
+    resolve(),
   ],
 };
 // 为什么vue2 只能支持ie9以上  Object.defineProperty不支持低版本的
