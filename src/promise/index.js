@@ -2,7 +2,7 @@
  * @Author: vici_y vici_y@163.com
  * @Date: 2022-06-05 17:22:03
  * @LastEditors: vici_y vici_y@163.com
- * @LastEditTime: 2022-06-14 11:12:04
+ * @LastEditTime: 2022-06-14 11:31:49
  * @FilePath: \mini-vue\src\promise\index.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -55,13 +55,15 @@ class HD {
   then(onFulfilled, onRejected) {
     // 当不传resolve或者reject函数时，会自动封装成函数
     if (typeof onFulfilled != "function") {
-      onFulfilled = () => {};
-      // onFulfilled = () => this.value;
+      // onFulfilled = () => {};
+      // 实现链式调用的时候穿透调用
+      onFulfilled = () => this.value;
     }
     if (typeof onRejected != "function") {
-      onRejected = () => {};
-      // onRejected = () => this.value;
+      // onRejected = () => {};
+      onRejected = () => this.value;
     }
+    // then返回的时promise，上一步返回的promie状态不会影响新的promise
     let promise = new HD((resolve, reject) => {
       // 当promise体中存在异步调用时，将需要执行的函数存入数组，等待状态改变后执行
       if (this.status == HD.PENDING) {
@@ -96,9 +98,11 @@ class HD {
       throw new TypeError("Chaining cycle detected");
     }
     try {
+      // 判断函数体内返回的时promise还是普通的值
       if (result instanceof HD) {
         result.then(resolve, reject);
       } else {
+        // 链式调用的新的promise默认返回成功的
         resolve(result);
       }
     } catch (error) {
