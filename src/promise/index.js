@@ -2,7 +2,7 @@
  * @Author: vici_y vici_y@163.com
  * @Date: 2022-06-05 17:22:03
  * @LastEditors: vici_y vici_y@163.com
- * @LastEditTime: 2022-06-14 10:32:27
+ * @LastEditTime: 2022-06-14 11:06:29
  * @FilePath: \mini-vue\src\promise\index.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,6 +15,7 @@ class HD {
     console.log("构造函数 executor", executor);
     this.status = HD.PENDING;
     this.value = null;
+    this.callbacks = []; // 存放需要执行的函数，在异步状态改变后执行数组中函数
     // 当执行体中出现错误需要捕捉
     try {
       // 这里的this指向的window，需要认为改变指向
@@ -29,12 +30,18 @@ class HD {
     if (this.status === HD.PENDING) {
       this.status = HD.FULFILLED;
       this.value = value;
+      this.callbacks.map((callback) => {
+        callback.onFulfilled(value);
+      });
     }
   }
   reject(reason) {
     if (this.status === HD.PENDING) {
       this.status = HD.REJECTED;
       this.value = reason;
+      this.callbacks.map((callback) => {
+        callback.onRejected(reason);
+      });
     }
   }
   then(onFulfilled, onRejected) {
@@ -48,17 +55,18 @@ class HD {
       // onRejected = () => this.value;
     }
     let promise = new HD((resolve, reject) => {
+      // 当promise体中存在异步调用时，将需要执行的函数存入数组，等待状态改变后执行
+      if (this.status == HD.PENDING) {
+        this.callbacks.push({
+          onFulfilled: (value) => {
+            this.parse(promise, onFulfilled(value), resolve, reject);
+          },
+          onRejected: (value) => {
+            this.parse(promise, onRejected(value), resolve, reject);
+          },
+        });
+      }
       // 当状态改变后才会执行对应函数
-      // if (this.status == HD.PENDING) {
-      //   this.callbacks.push({
-      //     onFulfilled: (value) => {
-      //       this.parse(promise, onFulfilled(value), resolve, reject);
-      //     },
-      //     onRejected: (value) => {
-      //       this.parse(promise, onRejected(value), resolve, reject);
-      //     },
-      //   });
-      // }
       if (this.status == HD.FULFILLED) {
         // 模拟异步任务
         setTimeout(() => {
