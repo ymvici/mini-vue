@@ -2,7 +2,7 @@
  * @Author: vici_y vici_y@163.com
  * @Date: 2022-06-05 17:22:03
  * @LastEditors: vici_y vici_y@163.com
- * @LastEditTime: 2022-06-14 11:06:29
+ * @LastEditTime: 2022-06-14 11:12:04
  * @FilePath: \mini-vue\src\promise\index.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -30,8 +30,14 @@ class HD {
     if (this.status === HD.PENDING) {
       this.status = HD.FULFILLED;
       this.value = value;
-      this.callbacks.map((callback) => {
-        callback.onFulfilled(value);
+      // this.callbacks.map((callback) => {
+      //   callback.onFulfilled(value);
+      // });
+      // 因为then产生的也是异步任务，所以不能立即执行
+      setTimeout(() => {
+        this.callbacks.map((callback) => {
+          callback.onFulfilled(value);
+        });
       });
     }
   }
@@ -39,8 +45,10 @@ class HD {
     if (this.status === HD.PENDING) {
       this.status = HD.REJECTED;
       this.value = reason;
-      this.callbacks.map((callback) => {
-        callback.onRejected(reason);
+      setTimeout(() => {
+        this.callbacks.map((callback) => {
+          callback.onRejected(reason);
+        });
       });
     }
   }
