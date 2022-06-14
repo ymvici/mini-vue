@@ -1,3 +1,11 @@
+<!--
+ * @Author: vici_y vici_y@163.com
+ * @Date: 2022-06-09 10:45:26
+ * @LastEditors: vici_y vici_y@163.com
+ * @LastEditTime: 2022-06-14 10:28:18
+ * @FilePath: \mini-vue\dist\promise.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,8 +18,16 @@
   <body>
     <script>
       let p = new HD((resolve, reject) => {
-        resolve("success");
-      });
+        // resolve("success");
+        reject("错误");
+      }).then(
+        (value) => {
+          console.log("value", value);
+        },
+        (reason) => {
+          console.log("reason", reason);
+        }
+      );
     </script>
   </body>
 </html>

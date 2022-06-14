@@ -2,7 +2,7 @@
  * @Author: vici_y vici_y@163.com
  * @Date: 2022-06-05 17:22:03
  * @LastEditors: vici_y vici_y@163.com
- * @LastEditTime: 2022-06-14 10:23:45
+ * @LastEditTime: 2022-06-14 10:32:27
  * @FilePath: \mini-vue\src\promise\index.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -12,7 +12,7 @@ class HD {
   static REJECTED = "rejected";
 
   constructor(executor) {
-    console.log("~ executor", executor);
+    console.log("构造函数 executor", executor);
     this.status = HD.PENDING;
     this.value = null;
     // 当执行体中出现错误需要捕捉
@@ -25,7 +25,6 @@ class HD {
   }
 
   resolve(value) {
-    console.log("~ value", value);
     // 只有准备状态才能改变
     if (this.status === HD.PENDING) {
       this.status = HD.FULFILLED;
@@ -61,18 +60,33 @@ class HD {
       //   });
       // }
       if (this.status == HD.FULFILLED) {
-        onFulfilled(this.value);
-        // setTimeout(() => {
-        //   this.parse(promise, onFulfilled(this.value), resolve, reject);
-        // });
+        // 模拟异步任务
+        setTimeout(() => {
+          this.parse(promise, onFulfilled(this.value), resolve, reject);
+        });
       }
       if (this.status == HD.REJECTED) {
-        onRejected(this.value);
-        // setTimeout(() => {
-        //   this.parse(promise, onRejected(this.value), resolve, reject);
-        // });
+        // 模拟异步任务
+        setTimeout(() => {
+          this.parse(promise, onRejected(this.value), resolve, reject);
+        });
       }
     });
     return promise;
+  }
+  parse(promise, result, resolve, reject) {
+    console.log("~ promise", promise);
+    if (promise == result) {
+      throw new TypeError("Chaining cycle detected");
+    }
+    try {
+      if (result instanceof HD) {
+        result.then(resolve, reject);
+      } else {
+        resolve(result);
+      }
+    } catch (error) {
+      reject(error);
+    }
   }
 }
